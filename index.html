@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Linkplas, MVP Assistente de Custeio</title>
+  <style>
+    :root{
+      --navy:#1C3746; --green:#68802D; --blue:#0D6EFD; --ink:#14212B; --muted:#64717C;
+      --bg:#F4F7F5; --paper:#FFFFFF; --line:#DDE6E1; --soft:#EAF0EC; --warn:#F59E0B;
+      --danger:#DC2626; --ok:#16A34A; --shadow:0 26px 70px rgba(28,55,70,.22);
+      --sans:"Open Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    *{box-sizing:border-box} html,body{height:100%;margin:0;font-family:var(--sans);color:var(--ink);background:radial-gradient(circle at 12% 0%,#dfeee4 0,#f4f7f5 38%,#e6edf0 100%);overflow:hidden}
+    body:before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(28,55,70,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(28,55,70,.035) 1px,transparent 1px);background-size:38px 38px;pointer-events:none}
+    .deck{height:100%;display:grid;place-items:center;padding:18px}.slide{width:min(96vw,1280px);height:min(54vw,720px);max-height:calc(100vh - 88px);aspect-ratio:16/9;background:var(--paper);border:1px solid rgba(28,55,70,.12);border-radius:30px;box-shadow:var(--shadow);position:relative;overflow:hidden;padding:52px;display:none}.slide.active{display:block}.slide.dark{background:linear-gradient(135deg,var(--navy),#0F202B);color:#fff}.slide:after{content:attr(data-kicker);position:absolute;right:34px;top:28px;font:800 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(28,55,70,.35)}.slide.dark:after{color:rgba(255,255,255,.35)}
+    h1,h2,h3,p{margin:0}h1{font-size:68px;line-height:.98;letter-spacing:-.055em;max-width:860px}h2{font-size:46px;line-height:1.03;letter-spacing:-.04em;max-width:980px;margin-bottom:18px}h3{font-size:22px;letter-spacing:-.02em}p{font-size:22px;line-height:1.36;color:var(--muted);max-width:780px}.dark p{color:#BED0DA}.eyebrow{font:900 13px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:18px}.dark .eyebrow{color:#B9D676}.tagline{font-size:27px;margin-top:24px}.accent{color:var(--green)}.blue{color:var(--blue)}.small{font-size:15px;color:var(--muted)}.dark .small{color:#B9CAD3}
+    .brand{position:absolute;left:52px;top:36px;display:flex;align-items:center;gap:13px;font-weight:900}.mark{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#fff,#B9D676);display:grid;place-items:center;color:var(--navy);font:950 18px var(--mono)}.brand span{letter-spacing:-.03em}.hero{display:grid;grid-template-columns:1fr 430px;gap:40px;align-items:center;height:100%;padding-top:18px}.machine{height:450px;border-radius:28px;background:linear-gradient(180deg,#F5F8F6,#DCE8E2);border:1px solid rgba(28,55,70,.14);position:relative;overflow:hidden}.machine:before{content:"";position:absolute;left:66px;right:66px;top:128px;height:184px;border-radius:24px;background:#1C3746;box-shadow:inset 0 0 0 14px #2B4D5F}.machine:after{content:"";position:absolute;left:112px;right:112px;top:168px;height:100px;border-radius:18px;background:#AFC3B3}.press{position:absolute;left:60px;right:60px;bottom:58px;height:58px;border-radius:18px;background:#68802D}.molde{position:absolute;left:159px;top:139px;width:112px;height:162px;border-radius:16px;background:#E8F1ED;border:7px solid #0F202B;z-index:2}.chip{position:absolute;border-radius:999px;padding:9px 13px;background:#fff;border:1px solid rgba(28,55,70,.14);font:900 12px var(--mono);color:var(--navy);box-shadow:0 10px 22px rgba(28,55,70,.14)}.c1{left:20px;top:24px}.c2{right:22px;top:64px}.c3{right:26px;bottom:28px}.c4{left:24px;bottom:34px}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}.card{background:#F7FAF8;border:1px solid var(--line);border-radius:24px;padding:22px;min-height:156px}.dark .card{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14)}.card strong{display:block;font-size:20px;margin:0 0 9px}.card span{display:block;font-size:16px;line-height:1.35;color:var(--muted)}.dark .card span{color:#C6D5DD}.num{width:42px;height:42px;border-radius:14px;background:#E6EED9;color:var(--green);display:grid;place-items:center;font:950 16px var(--mono);margin-bottom:15px}.dark .num{background:rgba(185,214,118,.16);color:#B9D676}
+    .process{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:32px}.step{background:#F8FAF8;border:1px solid var(--line);border-radius:22px;padding:20px;min-height:280px;position:relative}.step b{display:block;font-size:21px;margin-bottom:12px}.step p{font-size:16px}.step code{display:block;margin-top:18px;font:800 12px var(--mono);color:var(--green);white-space:normal}.step.warn{border-color:rgba(245,158,11,.45);background:#FFF7E8}.step.ok{border-color:rgba(22,163,74,.36);background:#EEF9F0}
+    .app{display:grid;grid-template-columns:300px 1fr;gap:18px;height:480px;margin-top:18px}.side,.screen{background:#F7FAF8;border:1px solid var(--line);border-radius:24px;padding:18px}.menu{padding:14px;border-radius:16px;margin-bottom:10px;color:#637382;font-weight:800}.menu.on{background:#E6EED9;color:var(--green)}.screen{display:grid;grid-template-rows:auto 1fr}.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;color:#5D6C76;font:900 12px var(--mono)}.grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:14px;margin-top:16px}.panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px}.row{display:grid;grid-template-columns:145px 1fr auto;gap:10px;align-items:center;border-bottom:1px solid #EEF3F0;padding:10px 0;font-size:14px}.row:last-child{border-bottom:0}.conf{font:900 12px var(--mono);border-radius:999px;padding:5px 8px}.hi{background:#DCFCE7;color:#166534}.med{background:#FEF3C7;color:#92400E}.low{background:#FEE2E2;color:#991B1B}.alert{display:flex;gap:12px;align-items:flex-start;background:#FFF7E8;border:1px solid #FCD7A2;border-radius:16px;padding:12px;margin-top:10px;font-size:14px;color:#6B4B16}.alert b{color:#92400E}
+    .excel{margin-top:24px;border:1px solid #C9D8D0;border-radius:20px;overflow:hidden;background:#fff}.excel table{width:100%;border-collapse:collapse;font-size:14px}.excel th{background:#1C3746;color:#fff;text-align:left;padding:12px;font-size:12px}.excel td{border-top:1px solid #E5ECE8;padding:10px;color:#243540}.excel tr:nth-child(even) td{background:#F8FAF8}.formula{font:800 18px var(--mono);background:#102633;color:#DFF7E7;border-radius:20px;padding:20px;margin-top:20px;line-height:1.4}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}.big{font-size:78px;letter-spacing:-.075em;font-weight:950;color:var(--green);line-height:.88}.list{display:grid;gap:13px;margin-top:18px}.item{background:#F7FAF8;border:1px solid var(--line);border-radius:18px;padding:15px;font-size:17px}.dark .item{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.13)}.timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:32px}.phase{background:#F8FAF8;border:1px solid var(--line);border-radius:24px;padding:24px;min-height:250px}.phase .time{display:inline-block;border-radius:999px;background:#E6EED9;color:var(--green);padding:8px 11px;font:900 12px var(--mono);margin-bottom:16px}.phase ul{margin:12px 0 0 18px;padding:0;color:#53636E;line-height:1.55;font-size:16px}
+    .controls{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border:1px solid rgba(28,55,70,.16);border-radius:999px;padding:10px 12px;z-index:20;box-shadow:0 12px 34px rgba(28,55,70,.16)}button{border:0;border-radius:999px;background:var(--navy);color:#fff;padding:10px 15px;font-weight:900;cursor:pointer}button:hover{background:#2A5268}.counter{font:900 13px var(--mono);color:#60707B;padding:0 8px}.hint{position:fixed;right:18px;bottom:22px;color:#71808A;font:900 12px var(--mono)}
+    @media(max-width:820px){html,body{overflow:auto}.deck{padding:0}.slide{width:100vw;height:auto;min-height:calc(100vh - 72px);max-height:none;aspect-ratio:auto;border-radius:0;padding:78px 22px 34px;overflow:visible}.brand{left:22px;top:22px}h1{font-size:43px}h2{font-size:34px}p{font-size:18px}.hero,.split,.app,.grid2{grid-template-columns:1fr;height:auto}.machine{height:360px}.cards,.process,.timeline{grid-template-columns:1fr}.hint{display:none}.excel{overflow:auto}.slide:after{right:22px;top:28px}}
+  </style>
+</head>
+<body>
+  <main class="deck" aria-live="polite">
+    <section class="slide dark active" data-kicker="Linkplas MVP">
+      <div class="brand"><div class="mark">L</div><span>Linkplas</span></div>
+      <div class="hero">
+        <div>
+          <div class="eyebrow">Assistente de Custeio</div>
+          <h1>MVP para acelerar orçamentos de injeção plástica</h1>
+          <p class="tagline">Uma camada simples sobre o processo atual da Linkplas: lê pedidos, extrai dados técnicos, valida campos críticos e gera uma base de orçamento para revisão humana.</p>
+        </div>
+        <div class="machine" aria-label="Ilustração de máquina de injeção plástica">
+          <div class="chip c1">PDF, Excel, Email</div><div class="chip c2">Extração IA</div><div class="molde"></div><div class="chip c3">Excel preenchido</div><div class="chip c4">Revisão humana</div><div class="press"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="Contexto">
+      <div class="eyebrow">O problema real</div>
+      <h2>O processo de orçamento depende de informação técnica dispersa e muita transcrição manual.</h2>
+      <div class="cards">
+        <div class="card"><div class="num">1</div><strong>Entrada pouco padronizada</strong><span>Pedidos chegam por email, PDF, Word, Excel e fichas técnicas com estruturas diferentes.</span></div>
+        <div class="card"><div class="num">2</div><strong>Excel como motor atual</strong><span>O ficheiro de custeio já contém fórmulas, regras e histórico, mas exige preenchimento cuidadoso.</span></div>
+        <div class="card"><div class="num">3</div><strong>Risco de erro e atraso</strong><span>Peso, material, corante, cavidades, ciclo, rejeição e MOQ podem gerar inconsistências no orçamento.</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="Proposta">
+      <div class="eyebrow">O que o MVP faz</div>
+      <h2>Não substitui o Excel no início. Cria uma camada assistida para preparar o orçamento mais rápido.</h2>
+      <div class="process">
+        <div class="step"><b>Receber</b><p>Centraliza ficheiros e pedidos de orçamento num fluxo único.</p><code>email, PDF, Word, Excel</code></div>
+        <div class="step"><b>Extrair</b><p>Identifica campos técnicos relevantes com IA e regras determinísticas.</p><code>peso, material, cor, quantidades</code></div>
+        <div class="step warn"><b>Validar</b><p>Mostra alertas para campos em falta, baixa confiança e incoerências.</p><code>human-in-the-loop</code></div>
+        <div class="step ok"><b>Gerar</b><p>Exporta uma linha ou ficheiro Excel pré-preenchido para revisão final.</p><code>modelo Linkplas</code></div>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="Protótipo">
+      <div class="eyebrow">Visualização do MVP</div>
+      <h2>Uma interface simples para upload, revisão e exportação.</h2>
+      <div class="app">
+        <div class="side">
+          <div class="menu on">Novo orçamento</div>
+          <div class="menu">Documentos</div>
+          <div class="menu">Campos extraídos</div>
+          <div class="menu">Validações</div>
+          <div class="menu">Exportar Excel</div>
+          <div class="menu">Histórico</div>
+        </div>
+        <div class="screen">
+          <div class="top"><h3>Pedido Polisport, cotação injeção</h3><div><span class="pill">12 campos extraídos</span> <span class="pill">3 alertas</span></div></div>
+          <div class="grid2">
+            <div class="panel">
+              <h3>Campos técnicos</h3>
+              <div class="row"><b>Código PP</b><span>PP19254PK</span><span class="conf hi">92%</span></div>
+              <div class="row"><b>Molde</b><span>ZC4468AA</span><span class="conf hi">90%</span></div>
+              <div class="row"><b>Peso peça</b><span>156 g</span><span class="conf hi">96%</span></div>
+              <div class="row"><b>Material</b><span>PPCOP TOTAL 7712</span><span class="conf med">78%</span></div>
+              <div class="row"><b>Corante</b><span>Preto, 2%</span><span class="conf med">74%</span></div>
+            </div>
+            <div class="panel">
+              <h3>Alertas</h3>
+              <div class="alert"><b>!</b><span>Confirmar preço atualizado da matéria-prima antes de exportar.</span></div>
+              <div class="alert"><b>!</b><span>Validar se rejeição de 4% é adequada para esta peça e lote.</span></div>
+              <div class="alert"><b>!</b><span>Campo ciclo ainda não foi identificado no anexo recebido.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="Excel padrão">
+      <div class="eyebrow">Ligação ao ficheiro atual</div>
+      <h2>O MVP prepara os dados no formato da aba Lista.</h2>
+      <div class="excel">
+        <table>
+          <thead><tr><th>Fornecedor</th><th>Data</th><th>Código PP</th><th>Molde</th><th>Designação</th><th>Peso</th><th>MP1</th><th>Preço MP1</th><th>Corante</th><th>Rejeição</th><th>Custo Material</th></tr></thead>
+          <tbody>
+            <tr><td>Linkplas</td><td>26/09/2025</td><td>PP19254PK</td><td>ZC4468AA</td><td>suporte bateria KTM</td><td>156 g</td><td>98%</td><td>1,75</td><td>2%</td><td>4%</td><td>0,3038</td></tr>
+            <tr><td>Linkplas</td><td>03/10/2025</td><td>PP19255PK</td><td>ZC4468AA</td><td>suporte bateria preto</td><td>108,5 g</td><td>98%</td><td>1,75</td><td>2%</td><td>6%</td><td>0,2154</td></tr>
+            <tr><td>Linkplas</td><td>03/10/2025</td><td>PP19256PK</td><td>ZC4468AA</td><td>tampa bateria preto</td><td>47,5 g</td><td>98%</td><td>1,75</td><td>2%</td><td>6%</td><td>0,0943</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="formula">Custo material = ((peso × MP1% × preço MP1) + (peso × MP2% × preço MP2) + (peso × corante% × preço corante)) × (1 + rejeição) / 1000</div>
+    </section>
+
+    <section class="slide" data-kicker="Motor técnico">
+      <div class="split">
+        <div>
+          <div class="eyebrow">Validação operacional</div>
+          <h2>O assistente cruza os dados da peça com máquinas, materiais e regras internas.</h2>
+          <p>O ponto forte não é “IA mágica”. É combinar extração assistida com regras reais da Linkplas, mantendo a equipa no controlo.</p>
+        </div>
+        <div class="list">
+          <div class="item"><span class="big">01</span><br><b>Máquina compatível</b><br>Distância entre colunas, altura de molde, capacidade de injeção e tonelagem.</div>
+          <div class="item"><span class="big">02</span><br><b>Custos coerentes</b><br>Preço de matéria-prima, corante, custo hora máquina, custo hora homem e setup.</div>
+          <div class="item"><span class="big">03</span><br><b>Campos críticos</b><br>Cavidades, ciclo, MOQ, rejeição, embalagem, transporte e observações.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide dark" data-kicker="Promessa">
+      <div class="eyebrow">Mensagem comercial</div>
+      <h2>Criar um Assistente de Custeio que reduz trabalho manual e acelera a resposta comercial, sem retirar a decisão técnica da equipa.</h2>
+      <div class="cards">
+        <div class="card"><div class="num">60%</div><strong>Menos transcrição</strong><span>Potencial de reduzir boa parte do trabalho repetitivo de passagem de dados.</span></div>
+        <div class="card"><div class="num">QA</div><strong>Menos erros óbvios</strong><span>Alertas para campos vazios, incoerências e baixa confiança da extração.</span></div>
+        <div class="card"><div class="num">XL</div><strong>Excel preservado</strong><span>O ficheiro atual continua como referência inicial, reduzindo risco de adoção.</span></div>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="Implementação">
+      <div class="eyebrow">Plano faseado</div>
+      <h2>Um MVP realista em três etapas, com revisão humana obrigatória.</h2>
+      <div class="timeline">
+        <div class="phase"><span class="time">2 a 3 semanas</span><h3>Fase 1, protótipo funcional</h3><ul><li>Upload de ficheiros</li><li>Extração de texto</li><li>Identificação dos campos</li><li>Exportação Excel inicial</li></ul></div>
+        <div class="phase"><span class="time">2 a 4 semanas</span><h3>Fase 2, regras e validações</h3><ul><li>Base de materiais</li><li>Base de máquinas</li><li>Alertas técnicos</li><li>Histórico de correções</li></ul></div>
+        <div class="phase"><span class="time">2 a 4 semanas</span><h3>Fase 3, piloto operacional</h3><ul><li>20 a 50 pedidos reais</li><li>Comparação com processo manual</li><li>Ajuste de regras</li><li>Medição de tempo poupado</li></ul></div>
+      </div>
+    </section>
+
+    <section class="slide" data-kicker="Próximos dados">
+      <div class="split">
+        <div>
+          <div class="eyebrow">Para avançar</div>
+          <h2>O próximo passo é alimentar o protótipo com exemplos reais da Linkplas.</h2>
+          <p>Com 10 a 20 fichas técnicas, alguns emails de pedido e propostas já preenchidas, dá para mapear os campos e montar a primeira versão demonstrável.</p>
+        </div>
+        <div class="list">
+          <div class="item"><b>1. Ficheiros reais</b><br>PDF, Word, Excel e emails de pedidos de orçamento.</div>
+          <div class="item"><b>2. Exemplos fechados</b><br>Propostas já preenchidas para comparar entrada, cálculo e saída.</div>
+          <div class="item"><b>3. Regras internas</b><br>Máquinas, materiais, corantes, custos/hora, margens e arredondamentos.</div>
+          <div class="item"><b>4. Critérios de aprovação</b><br>Quais campos a IA pode sugerir e quais exigem validação técnica.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div class="controls"><button id="prev">←</button><span class="counter" id="counter"></span><button id="next">→</button></div>
+  <div class="hint">Use ← → ou toque nos botões</div>
+  <script>
+    const slides=[...document.querySelectorAll('.slide')];
+    let idx=Number(localStorage.getItem('linkplas-mvp-slide')||0);
+    if(idx<0||idx>=slides.length) idx=0;
+    const counter=document.getElementById('counter');
+    function show(i){slides[idx].classList.remove('active');idx=(i+slides.length)%slides.length;slides[idx].classList.add('active');counter.textContent=`${idx+1} / ${slides.length}`;localStorage.setItem('linkplas-mvp-slide',idx)}
+    document.getElementById('prev').onclick=()=>show(idx-1);
+    document.getElementById('next').onclick=()=>show(idx+1);
+    addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ') show(idx+1); if(e.key==='ArrowLeft') show(idx-1);});
+    show(idx);
+  </script>
+</body>
+</html>
